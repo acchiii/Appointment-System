@@ -2,8 +2,10 @@
 {% block title %}SchoolDesk — Student Appointment System{% endblock %}
 
 {% block content %}
-
-<section class="hero">
+{% load static %}
+<section class="hero" >
+  {% comment %} background-image: url({% static 'images/cec-banner.jpg' %}); {% endcomment %}
+{% comment %} <section class="hero" style="height: 85vh; background: rgba(255,255,255,0.6); position: fixed; left: 0; top: 0; z-index: -1;"></section> {% endcomment %}
   <div class="hero-bg-circles">
     <div class="circle c1"></div>
     <div class="circle c2"></div>
@@ -20,6 +22,10 @@
       Skip the long lines. Schedule your visit to the Registrar, Enrollment Office,
       or Document Services — all in one place.
     </p>
+
+    
+    {% if not user.authenticated or not user.is_student %}
+      
     <div class="hero-actions">
       
       <a href="{% if user.is_authenticated and user.is_student %} {% url 'book_appointment' %} {% else %} {% url 'login' %} {% endif %}" class="btn btn-primary btn-lg">
@@ -29,6 +35,8 @@
         View Appointments
       </a>
     </div>
+    {% endif %}
+
   </div>
   <div class="hero-visual">
     <div class="visual-card vc-1">
@@ -61,6 +69,8 @@
 </section>
 
 
+{% comment %} {% if user.is_authenticated and user.profile.role in 'staff, admin'  %} {% endcomment %}
+
 <section class="stats-section">
   <div class="stats-grid">
     <div class="stat-card">
@@ -81,6 +91,7 @@
     </div>
   </div>
 </section>
+{% comment %} {% endif %} {% endcomment %}
 
 
 <section class="offices-section">
@@ -158,6 +169,7 @@
 
 
 {% if recent %}
+{% comment %} and user.is_authenticated and user.profile.role in 'staff, admin' {% endcomment %}
 <section class="recent-section">
   <div class="section-header">
     <h2 class="section-title">Recent Activity</h2>

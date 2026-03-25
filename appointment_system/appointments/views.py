@@ -215,3 +215,8 @@ def profile_view(request):
         'profile': profile,
         'my_appointments': my_appointments,
     })
+
+def error404(request, error):
+    return render('appointments/404.html')
+def error500(request):
+    return render('appointments/500.html')

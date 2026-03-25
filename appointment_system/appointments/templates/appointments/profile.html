@@ -12,13 +12,13 @@
 
   <div class="profile-layout">
     
-    <aside class="profile-sidebar">
-      <div class="profile-card">
+    <aside class="page-sidebar">
+      <div class="page-card">
         <div class="profile-avatar">
           {{ request.user.first_name|first|upper }}{{ request.user.last_name|first|upper }}
         </div>
-        <h2 class="profile-name">{{ request.user.get_full_name|default:request.user.username }}</h2>
-        <p class="profile-email">{{ request.user.email }}</p>
+        <h2 class="page-name">{{ request.user.get_full_name|default:request.user.username }}</h2>
+        <p class="page-email">{{ request.user.email }}</p>
         <span class="badge
           {% if profile.role == 'admin' %}badge-approved
           {% elif profile.role == 'staff' %}badge-done
@@ -26,7 +26,7 @@
           badge-lg" style="margin-top:8px">
           {{ profile.get_role_display }}
         </span>
-        <div class="profile-meta">
+        <div class="page-meta">
           {% if profile.student_id %}
           <div class="profile-meta-row">
             <span class="profile-meta-label">Student ID</span>
@@ -44,12 +44,15 @@
             <span class="profile-meta-value">{{ request.user.date_joined|date:"M Y" }}</span>
           </div>
         </div>
-        <a href="{% url 'book_appointment' %}" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:16px">
-          + Book Appointment
-        </a>
-        <form method="post" action="{% url 'logout' %}" style="margin-top:8px">
-          {% csrf_token %}
-          <button type="submit" class="btn btn-ghost" style="width:100%;justify-content:center">Sign Out</button>
+        <div class="form-action">
+
+          <a href="{% url 'book_appointment' %}" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:16px">
+            + Book Appointment
+          </a>
+          <form method="post" action="{% url 'logout' %}" style="margin-top:8px">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-ghost" style="width:100%;justify-content:center">Sign Out</button>
+          </div>
         </form>
       </div>
     </aside>
