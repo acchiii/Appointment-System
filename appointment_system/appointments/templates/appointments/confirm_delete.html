@@ -17,7 +17,6 @@
       This action <strong>cannot be undone</strong>.
     </p>
 
-    <!-- Appointment Summary -->
     <div class="delete-summary">
       <div class="delete-ref">APT-{{ appointment.id|stringformat:"04d" }}</div>
       <div class="delete-details">
@@ -64,7 +63,6 @@
       </div>
     </div>
 
-    <!-- Confirm / Cancel buttons -->
     <form method="post" class="delete-actions">
       {% csrf_token %}
       <a href="{% url 'appointments_list' %}" class="btn btn-ghost btn-lg">

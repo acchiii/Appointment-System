@@ -1,17 +1,19 @@
 {% extends "appointments/base.html" %}
-{% block title %}All Appointments — SchoolDesk{% endblock %}
+{% block title %}Appointments — SchoolDesk{% endblock %}
 
 {% block content %}
 <div class="page-container">
   <div class="page-header list-header">
     <div class="page-title-group">
-      <h1 class="page-title">Appointments</h1>
+      <h1 class="page-title">
+        {% if is_staff_or_admin %}All Appointments{% else %}My Appointments{% endif %}
+      </h1>
       <p class="page-subtitle">{{ total_shown }} record{{ total_shown|pluralize }} found</p>
     </div>
     <a href="{% url 'book_appointment' %}" class="btn btn-primary">+ Book New</a>
   </div>
 
-  <!-- SEARCH & FILTER -->
+  <!-- SEARCH & FILTER (staff/admin only get full filter bar) -->
   <form method="get" class="search-filter-bar">
     <div class="search-wrap">
       {{ search_form.search }}
@@ -19,15 +21,15 @@
     </div>
     <div class="filter-group">
       {{ search_form.office }}
-      {{ search_form.status }}
+      {% if is_staff_or_admin %}{{ search_form.status }}{% endif %}
       {{ search_form.date_filter }}
       <button type="submit" class="btn btn-sm btn-outline">Filter</button>
       <a href="{% url 'appointments_list' %}" class="btn btn-sm btn-ghost">Clear</a>
     </div>
   </form>
 
-  <!-- TABLE -->
   {% if appointments %}
+  <!-- DESKTOP TABLE -->
   <div class="table-wrapper">
     <table class="appt-table">
       <thead>
@@ -45,32 +47,24 @@
       <tbody>
         {% for appt in appointments %}
         <tr class="appt-row">
-          <td>
-            <span class="appt-ref">APT-{{ appt.id|stringformat:"04d" }}</span>
-          </td>
+          <td><span class="appt-ref">APT-{{ appt.id|stringformat:"04d" }}</span></td>
           <td>
             <div class="student-cell">
               <div class="student-avatar">{{ appt.student_name|first|upper }}</div>
               <div>
                 <span class="student-name">{{ appt.student_name }}</span>
-                {% if appt.student_id %}
-                <span class="student-id">{{ appt.student_id }}</span>
-                {% endif %}
+                {% if appt.student_id %}<span class="student-id">{{ appt.student_id }}</span>{% endif %}
               </div>
             </div>
           </td>
-          <td>
-            <span class="office-tag">{{ appt.get_office_display }}</span>
-          </td>
+          <td><span class="office-tag">{{ appt.get_office_display }}</span></td>
           <td>
             <div class="datetime-cell">
               <span class="appt-date">{{ appt.date|date:"M d, Y" }}</span>
               <span class="appt-time">{{ appt.time|time:"g:i A" }}</span>
             </div>
           </td>
-          <td>
-            <span class="purpose-text">{{ appt.get_purpose_display }}</span>
-          </td>
+          <td><span class="purpose-text">{{ appt.get_purpose_display }}</span></td>
           <td>
             <div class="contact-cell">
               <span>{{ appt.contact }}</span>
@@ -78,14 +72,36 @@
             </div>
           </td>
           <td>
-            <span class="badge {{ appt.get_status_badge_class }}">
-              {{ appt.get_status_display }}
-            </span>
+            {% if is_staff_or_admin %}
+            <!-- Staff/Admin: inline status dropdown -->
+            <form method="post" action="{% url 'update_status' appt.pk %}">
+              {% csrf_token %}
+              <div class="inline-status-wrap">
+                <select name="status" class="status-select status-{{ appt.status }}" onchange="this.form.submit()">
+                  <option value="pending"   {% if appt.status == 'pending' %}selected{% endif %}>Pending</option>
+                  <option value="approved"  {% if appt.status == 'approved' %}selected{% endif %}>Approved</option>
+                  <option value="done"      {% if appt.status == 'done' %}selected{% endif %}>Done</option>
+                  <option value="cancelled" {% if appt.status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+                </select>
+              </div>
+            </form>
+            {% else %}
+            <span class="badge {{ appt.get_status_badge_class }}">{{ appt.get_status_display }}</span>
+            {% endif %}
           </td>
           <td>
             <div class="action-buttons">
-              <a href="{% url 'edit_appointment' appt.pk %}" class="btn-icon btn-edit" title="Edit">✏️</a>
-              <a href="{% url 'delete_appointment' appt.pk %}" class="btn-icon btn-delete" title="Delete">🗑️</a>
+              {% if is_staff_or_admin %}
+                <!-- Staff/Admin: can always edit -->
+                <a href="{% url 'edit_appointment' appt.pk %}" class="btn-icon btn-edit" title="Edit">✏️</a>
+                <a href="{% url 'delete_appointment' appt.pk %}" class="btn-icon btn-delete" title="Delete">🗑️</a>
+              {% elif appt.email == request.user.email and appt.status == 'pending' %}
+                <!-- Student: only own pending appointments -->
+                <a href="{% url 'edit_appointment' appt.pk %}" class="btn-icon btn-edit" title="Edit">✏️</a>
+                <a href="{% url 'delete_appointment' appt.pk %}" class="btn-icon btn-delete" title="Cancel">🗑️</a>
+              {% else %}
+                <span class="action-locked" title="Cannot modify">🔒</span>
+              {% endif %}
             </div>
           </td>
         </tr>
@@ -94,7 +110,7 @@
     </table>
   </div>
 
-  <!-- MOBILE CARDS (shown on small screens) -->
+  <!-- MOBILE CARDS -->
   <div class="appt-cards">
     {% for appt in appointments %}
     <div class="appt-card">
@@ -121,16 +137,17 @@
           <span class="appt-card-label">Purpose</span>
           <span class="appt-card-value">{{ appt.get_purpose_display }}</span>
         </div>
-        <div class="appt-card-row">
-          <span class="appt-card-label">Contact</span>
-          <span class="appt-card-value">{{ appt.contact }}</span>
-        </div>
       </div>
       <div class="appt-card-actions">
         <span class="appt-ref-small">APT-{{ appt.id|stringformat:"04d" }}</span>
         <div class="action-buttons">
-          <a href="{% url 'edit_appointment' appt.pk %}" class="btn btn-sm btn-outline">Edit</a>
-          <a href="{% url 'delete_appointment' appt.pk %}" class="btn btn-sm btn-danger">Delete</a>
+          {% if is_staff_or_admin %}
+            <a href="{% url 'edit_appointment' appt.pk %}" class="btn btn-sm btn-outline">Edit</a>
+            <a href="{% url 'delete_appointment' appt.pk %}" class="btn btn-sm btn-danger">Delete</a>
+          {% elif appt.email == request.user.email and appt.status == 'pending' %}
+            <a href="{% url 'edit_appointment' appt.pk %}" class="btn btn-sm btn-outline">Edit</a>
+            <a href="{% url 'delete_appointment' appt.pk %}" class="btn btn-sm btn-danger">Cancel</a>
+          {% endif %}
         </div>
       </div>
     </div>
@@ -138,21 +155,16 @@
   </div>
 
   {% else %}
-  <!-- EMPTY STATE -->
   <div class="empty-state">
     <div class="empty-icon">📭</div>
     <h3>No appointments found</h3>
     <p>
-      {% if request.GET %}
-        No results match your search or filters. Try adjusting them.
-      {% else %}
-        There are no appointments yet. Be the first to book one!
-      {% endif %}
+      {% if request.GET %}No results match your filters.
+      {% elif is_staff_or_admin %}No appointments have been booked yet.
+      {% else %}You haven't booked any appointments yet.{% endif %}
     </p>
     <div class="empty-actions">
-      {% if request.GET %}
-      <a href="{% url 'appointments_list' %}" class="btn btn-outline">Clear Filters</a>
-      {% endif %}
+      {% if request.GET %}<a href="{% url 'appointments_list' %}" class="btn btn-outline">Clear Filters</a>{% endif %}
       <a href="{% url 'book_appointment' %}" class="btn btn-primary">Book Appointment →</a>
     </div>
   </div>

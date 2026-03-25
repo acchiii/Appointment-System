@@ -15,7 +15,7 @@
   </div>
 
   <div class="form-layout">
-    <!-- FORM CARD -->
+
     <div class="form-card">
       <div class="form-card-header">
         <span class="form-card-icon">✏️</span>
@@ -28,7 +28,7 @@
       <form method="post" class="appt-form" novalidate>
         {% csrf_token %}
 
-        <!-- Student Info -->
+    
         <div class="form-section">
           <h3 class="form-section-title">👤 Student Information</h3>
           <div class="form-row two-col">
@@ -63,7 +63,6 @@
           </div>
         </div>
 
-        <!-- Appointment Details -->
         <div class="form-section">
           <h3 class="form-section-title">🗓️ Appointment Details</h3>
           <div class="form-row">
@@ -111,7 +110,7 @@
           </div>
         </div>
 
-        <!-- Status Update -->
+
         <div class="form-section">
           <h3 class="form-section-title">📌 Current Status</h3>
           <div class="status-display">
@@ -120,7 +119,7 @@
             </span>
             <p class="status-note">Status can be updated by staff through the <a href="/admin/">Admin Panel</a> or using the quick-update below.</p>
           </div>
-          <!-- Quick status update -->
+
           <div class="form-row">
             <form method="post" action="{% url 'update_status' appointment.pk %}" class="inline-status-form">
               {% csrf_token %}
@@ -153,7 +152,7 @@
       </form>
     </div>
 
-    <!-- SIDEBAR -->
+  
     <aside class="form-sidebar">
       <div class="info-card info-card-dark">
         <h3>📋 Appointment Summary</h3>

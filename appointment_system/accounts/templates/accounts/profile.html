@@ -1,0 +1,102 @@
+{% extends "appointments/base.html" %}
+{% block title %}My Profile — SchoolDesk{% endblock %}
+
+{% block content %}
+<div class="page-container">
+  <div class="page-header">
+    <div class="page-title-group">
+      <h1 class="page-title">My Profile</h1>
+      <p class="page-subtitle">Manage your account and view your appointments</p>
+    </div>
+  </div>
+
+  <div class="profile-layout">
+    <!-- Profile Card -->
+    <aside class="profile-sidebar">
+      <div class="profile-card">
+        <div class="profile-avatar">
+          {{ request.user.first_name|first|upper }}{{ request.user.last_name|first|upper }}
+        </div>
+        <h2 class="profile-name">{{ request.user.get_full_name|default:request.user.username }}</h2>
+        <p class="profile-email">{{ request.user.email }}</p>
+        <span class="badge
+          {% if profile.role == 'admin' %}badge-approved
+          {% elif profile.role == 'staff' %}badge-done
+          {% else %}badge-pending{% endif %}
+          badge-lg" style="margin-top:8px">
+          {{ profile.get_role_display }}
+        </span>
+        <div class="profile-meta">
+          {% if profile.student_id %}
+          <div class="profile-meta-row">
+            <span class="profile-meta-label">Student ID</span>
+            <span class="profile-meta-value">{{ profile.student_id }}</span>
+          </div>
+          {% endif %}
+          {% if profile.contact %}
+          <div class="profile-meta-row">
+            <span class="profile-meta-label">Contact</span>
+            <span class="profile-meta-value">{{ profile.contact }}</span>
+          </div>
+          {% endif %}
+          <div class="profile-meta-row">
+            <span class="profile-meta-label">Member since</span>
+            <span class="profile-meta-value">{{ request.user.date_joined|date:"M Y" }}</span>
+          </div>
+        </div>
+        <a href="{% url 'book_appointment' %}" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:16px">
+          + Book Appointment
+        </a>
+        <form method="post" action="{% url 'logout' %}" style="margin-top:8px">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-ghost" style="width:100%;justify-content:center">Sign Out</button>
+        </form>
+      </div>
+    </aside>
+
+    <!-- Appointments -->
+    <div class="profile-main">
+      <div class="profile-section-header">
+        <h3>My Appointments</h3>
+        <span class="profile-count">{{ my_appointments.count }} total</span>
+      </div>
+
+      {% if my_appointments %}
+      <div class="profile-appt-list">
+        {% for appt in my_appointments %}
+        <div class="profile-appt-item">
+          <div class="profile-appt-left">
+            <div class="profile-appt-ref">APT-{{ appt.id|stringformat:"04d" }}</div>
+            <div class="profile-appt-info">
+              <span class="profile-appt-purpose">{{ appt.get_purpose_display }}</span>
+              <span class="profile-appt-office">{{ appt.get_office_display }}</span>
+            </div>
+          </div>
+          <div class="profile-appt-right">
+            <div class="profile-appt-date">
+              <span>{{ appt.date|date:"M d, Y" }}</span>
+              <span>{{ appt.time|time:"g:i A" }}</span>
+            </div>
+            <span class="badge {{ appt.get_status_badge_class }}">{{ appt.get_status_display }}</span>
+            <div class="action-buttons">
+              {% if appt.status == 'pending' %}
+              <a href="{% url 'edit_appointment' appt.pk %}" class="btn-icon btn-edit" title="Edit">✏️</a>
+              <a href="{% url 'delete_appointment' appt.pk %}" class="btn-icon btn-delete" title="Cancel">🗑️</a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="empty-state" style="padding:40px 24px">
+        <div class="empty-icon">📭</div>
+        <h3>No appointments yet</h3>
+        <p>You haven't booked any appointments. Click below to get started.</p>
+        <a href="{% url 'book_appointment' %}" class="btn btn-primary">Book Appointment →</a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

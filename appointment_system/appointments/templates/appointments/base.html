@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,12 +8,14 @@
   {% load static %}
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  {% load static %}
+  <link rel="shortcut icon" href="{% static 'images/Screenshot 2026-03-25 221102.png' %}" type="image/x-icon">
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
 
-  <!-- NAV -->
+
   <header class="nav-header">
     <div class="nav-inner">
       <a href="{% url 'home' %}" class="nav-logo">
@@ -21,24 +24,69 @@
       </a>
       <nav class="nav-links">
         <a href="{% url 'home' %}" class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">Home</a>
-        <a href="{% url 'book_appointment' %}" class="nav-link {% if request.resolver_match.url_name == 'book_appointment' %}active{% endif %}">Book Appointment</a>
-        <a href="{% url 'appointments_list' %}" class="nav-link {% if request.resolver_match.url_name == 'appointments_list' %}active{% endif %}">View Appointments</a>
-        <a href="/admin/" class="nav-link nav-admin" target="_blank">Admin ↗</a>
+        {% if user.is_authenticated %}
+          <a href="{% url 'book_appointment' %}" class="nav-link {% if request.resolver_match.url_name == 'book_appointment' %}active{% endif %}">Book Appointment</a>
+          <a href="{% url 'appointments_list' %}" class="nav-link {% if request.resolver_match.url_name == 'appointments_list' %}active{% endif %}">
+            
+              {% if user.profile.role in 'staff,admin' %}All Appointments{% elif user.profile.role == 'students' %}My Appointments{% else %}
+            Appointments{% endif %}
+          </a>
+        {% endif %}
+        {% if user.is_authenticated %}
+        
+            <div class="nav-links" id="userDropdown">
+              {% comment %} <div class="nav-dropdown-header">
+                <span class="nav-dropdown-name">{{ user.get_full_name|default:user.username }}</span>
+                <span class="nav-dropdown-email">{{ user.email }}</span>
+                <span class="nav-dropdown-role">
+                 {% if user.profile %} {{ user.profile.get_role_display }} {% else %} Student {% endif %}
+                </span>
+              </div> {% endcomment %}
+              <a href="{% url 'profile' %}" class="nav-link {% if request.resolver_match.url_name == 'profile' %}active{% endif %}">Profile</a>
+              {% comment %} <a href="{% url 'book_appointment' %}" class="nav-dropdown-item">📋 Book Appointment</a> {% endcomment %}
+              {% if user.is_superuser or user.is_staff %}
+              <a href="/admin/" class="nav-dropdown-item" target="_blank">Admin Panel ↗</a>
+              {% endif %}
+              <div class="nav-dropdown-divider"></div>
+              <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="nav-link {% if request.resolver_match.url_name == 'logout' %}active{% endif %}">Sign Out</button>
+              </form>
+            </div>
+          
+        {% else %}
+          <a href="{% url 'login' %}" class="nav-link">Sign In</a>
+          <a href="{% url 'register' %}" class="nav-link">Register</a>
+          <a href="{% url 'admin:index' %}" class="btn btn-primary" style="padding:7px 16px;font-size:.85rem">Admin</a>
+        {% endif %}
       </nav>
       <button class="nav-toggle" id="navToggle" aria-label="Menu">
         <span></span><span></span><span></span>
       </button>
     </div>
-    <!-- Mobile menu -->
+   
     <nav class="nav-mobile" id="navMobile">
       <a href="{% url 'home' %}" class="nav-link">Home</a>
-      <a href="{% url 'book_appointment' %}" class="nav-link">Book Appointment</a>
-      <a href="{% url 'appointments_list' %}" class="nav-link">View Appointments</a>
-      <a href="/admin/" class="nav-link">Admin Panel ↗</a>
+      {% if user.is_authenticated %}
+          <a href="{% if user.is_student %} {% url 'book_appointment' %} {% else %} {% url 'login' %} {% endif %}" class="nav-link">Book Appointment</a>
+          <a href="{% if user.is_student  %} {% url 'appointments_list' %} {% else %} {% url 'login' %} {% endif %}" class="nav-link">My Appointments</a>
+          <a href="{% url 'profile' %}" class="nav-link">My Profile</a>
+          {% if user.is_superuser or user.is_staff %}
+            <a href="/admin/" class="nav-link">Admin Panel ↗</a>
+          {% endif %}
+          <form method="post" action="{% url 'logout' %}" style="padding:4px 0">
+            {% csrf_token %}
+            <button type="submit" class="nav-link" style="width:100%;text-align:left;background:none;border:none;cursor:pointer;color:var(--red)">Sign Out</button>
+          </form>
+      {% else %}
+        <a href="{% url 'login' %}" class="nav-link">Sign In</a>
+        <a href="{% url 'register' %}" class="nav-link">Register</a>
+        <a href="{% url 'admin:index' %}" class="nav-link">Admin</a>
+      {% endif %}
     </nav>
   </header>
 
-  <!-- MESSAGES -->
+  
   {% if messages %}
   <div class="messages-container" id="messagesContainer">
     {% for message in messages %}
@@ -50,12 +98,11 @@
   </div>
   {% endif %}
 
-  <!-- MAIN -->
   <main class="main-content">
     {% block content %}{% endblock %}
   </main>
 
-  <!-- FOOTER -->
+  
   <footer class="site-footer">
     <div class="footer-inner">
       <p class="footer-brand">School<strong>Desk</strong></p>
@@ -65,7 +112,7 @@
   </footer>
 
   <script>
-    // Mobile nav toggle
+    
     const toggle = document.getElementById('navToggle');
     const mobileNav = document.getElementById('navMobile');
     toggle?.addEventListener('click', () => {
@@ -73,7 +120,18 @@
       toggle.classList.toggle('active');
     });
 
-    // Auto-dismiss messages after 5s
+    
+    const userMenuBtn = document.getElementById('userMenuBtn');
+    const userDropdown = document.getElementById('userDropdown');
+    userMenuBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      userDropdown.classList.toggle('open');
+    });
+    document.addEventListener('click', () => {
+      userDropdown?.classList.remove('open');
+    });
+
+    
     setTimeout(() => {
       document.querySelectorAll('.message').forEach(el => {
         el.style.opacity = '0';

@@ -1,0 +1,91 @@
+{% extends "appointments/base.html" %}
+{% block title %}Register — SchoolDesk{% endblock %}
+
+{% block content %}
+<div class="page-container">
+  <div class="page-card page-card-wide">
+    <div class="page-header">
+        
+      <h1 class="page-title">Create Account</h1>
+      <p class="page-subtitle">Register as a student to start booking appointments</p>
+    </div>
+
+     <div class="form-layout">
+      <div class="form-card">
+        <div class="form-card-header">
+          <span class="form-card-icon">📋</span>
+          <div>
+            <h2 class="form-card-title">Register Form</h2>
+            <p class="form-card-sub">All fields marked * are required</p>
+          </div>
+        </div>
+
+    <form method="post" class="appt-form" novalidate>
+      {% csrf_token %}
+
+      <div class="form-section">
+        <h3 class="form-section-title">👤 Personal Information</h3>
+        <div class="form-row two-col">
+          <div class="form-group">
+            <label class="form-label">First Name <span class="required">*</span></label>
+            {{ form.first_name }}
+            {% if form.first_name.errors %}<span class="form-error">{{ form.first_name.errors.0 }}</span>{% endif %}
+          </div>
+          <div class="form-group">
+            <label class="form-label">Last Name <span class="required">*</span></label>
+            {{ form.last_name }}
+            {% if form.last_name.errors %}<span class="form-error">{{ form.last_name.errors.0 }}</span>{% endif %}
+          </div>
+        </div>
+        <div class="form-row two-col">
+          <div class="form-group">
+            <label class="form-label">Email Address <span class="required">*</span></label>
+            {{ form.email }}
+            {% if form.email.errors %}<span class="form-error">{{ form.email.errors.0 }}</span>{% endif %}
+          </div>
+          <div class="form-group">
+            <label class="form-label">Contact Number</label>
+            {{ form.contact }}
+            {% if form.contact.errors %}<span class="form-error">{{ form.contact.errors.0 }}</span>{% endif %}
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Student ID</label>
+          {{ form.student_id }}
+          {% if form.student_id.errors %}<span class="form-error">{{ form.student_id.errors.0 }}</span>{% endif %}
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3 class="form-section-title">🔒 Set Password</h3>
+        <div class="form-row two-col">
+          <div class="form-group">
+            <label class="form-label">Password <span class="required">*</span></label>
+            {{ form.password1 }}
+            {% if form.password1.errors %}<span class="form-error">{{ form.password1.errors.0 }}</span>{% endif %}
+          </div>
+          <div class="form-group">
+            <label class="form-label">Confirm Password <span class="required">*</span></label>
+            {{ form.password2 }}
+            {% if form.password2.errors %}<span class="form-error">{{ form.password2.errors.0 }}</span>{% endif %}
+          </div>
+        </div>
+        <p class="form-hint">Minimum 8 characters.</p>
+      </div>
+
+      {% if form.non_field_errors %}
+        <div class="auth-error">{{ form.non_field_errors.0 }}</div>
+      {% endif %}
+
+      <div class="form-action">
+
+        <button type="submit" class="btn btn-primary btn-full">Create Account →</button>
+        <div class="auth-divider"><span>Already have an account?</span></div>
+        <a href="{% url 'login' %}" class="btn btn-outline btn-full">Sign In</a>
+      </div>
+    </div>
+    </form>
+
+   
+</div>
+{% endblock %}

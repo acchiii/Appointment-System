@@ -13,16 +13,16 @@ class AppointmentForm(forms.ModelForm):
         widgets = {
             'student_name': forms.TextInput(attrs={
                 'class': 'form-input',
-                'placeholder': 'e.g. Juan Dela Cruz',
+                'placeholder': 'e.g. John Martin',
                 'autocomplete': 'name',
             }),
             'student_id': forms.TextInput(attrs={
                 'class': 'form-input',
-                'placeholder': 'e.g. 2021-00123 (optional)',
+                'placeholder': 'e.g. 2312103 (optional)',
             }),
             'email': forms.EmailInput(attrs={
                 'class': 'form-input',
-                'placeholder': 'e.g. juan@email.com',
+                'placeholder': 'e.g. martin@gmail.com',
                 'autocomplete': 'email',
             }),
             'contact': forms.TextInput(attrs={

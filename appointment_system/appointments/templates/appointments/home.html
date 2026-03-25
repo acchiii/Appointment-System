@@ -2,7 +2,7 @@
 {% block title %}SchoolDesk — Student Appointment System{% endblock %}
 
 {% block content %}
-<!-- HERO -->
+
 <section class="hero">
   <div class="hero-bg-circles">
     <div class="circle c1"></div>
@@ -21,10 +21,11 @@
       or Document Services — all in one place.
     </p>
     <div class="hero-actions">
-      <a href="{% url 'book_appointment' %}" class="btn btn-primary btn-lg">
+      
+      <a href="{% if user.is_authenticated and user.is_student %} {% url 'book_appointment' %} {% else %} {% url 'login' %} {% endif %}" class="btn btn-primary btn-lg">
         Book Appointment →
       </a>
-      <a href="{% url 'appointments_list' %}" class="btn btn-outline btn-lg">
+      <a href="{% if user.is_authenticated and user.is_student %} {% url 'appointments_list' %} {% else %} {% url 'login' %} {% endif %}" class="btn btn-outline btn-lg">
         View Appointments
       </a>
     </div>
@@ -59,7 +60,7 @@
   </div>
 </section>
 
-<!-- STATS -->
+
 <section class="stats-section">
   <div class="stats-grid">
     <div class="stat-card">
@@ -81,7 +82,7 @@
   </div>
 </section>
 
-<!-- OFFICES -->
+
 <section class="offices-section">
   <div class="section-header">
     <h2 class="section-title">School Offices</h2>
@@ -98,7 +99,7 @@
         <li>Grade Inquiries</li>
         <li>Certifications</li>
       </ul>
-      <a href="{% url 'book_appointment' %}" class="btn btn-sm btn-outline">Book Now</a>
+      <a href="{% if user.is_authenticated and user.is_student %}{% url 'book_appointment' %} {% else %}{% url 'login' %} {% endif %}" class="btn btn-sm btn-outline">Book Now</a>
     </div>
     <div class="office-card featured">
       <div class="office-badge">Most Visited</div>
@@ -111,7 +112,7 @@
         <li>Subject Load Concerns</li>
         <li>Schedule Issues</li>
       </ul>
-      <a href="{% url 'book_appointment' %}" class="btn btn-sm btn-primary">Book Now</a>
+      <a href="{% if user.is_authenticated and user.is_student %}{% url 'book_appointment' %} {% else %}{% url 'login' %} {% endif %}" class="btn btn-sm btn-primary">Book Now</a>
     </div>
     <div class="office-card">
       <div class="office-icon">📄</div>
@@ -123,12 +124,12 @@
         <li>Official Document Requests</li>
         <li>General Inquiries</li>
       </ul>
-      <a href="{% url 'book_appointment' %}" class="btn btn-sm btn-outline">Book Now</a>
+      <a href="{% if user.is_authenticated and user.is_student %}{% url 'book_appointment' %} {% else %}{% url 'login' %} {% endif %}" class="btn btn-sm btn-outline">Book Now</a>
     </div>
   </div>
 </section>
 
-<!-- HOW IT WORKS -->
+
 <section class="how-section">
   <div class="section-header">
     <h2 class="section-title">How It Works</h2>
@@ -155,7 +156,7 @@
   </div>
 </section>
 
-<!-- RECENT APPOINTMENTS PREVIEW -->
+
 {% if recent %}
 <section class="recent-section">
   <div class="section-header">
