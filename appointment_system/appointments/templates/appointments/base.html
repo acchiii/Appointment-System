@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}SchoolDesk — Appointment System{% endblock %}</title>
+  {% load static %}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+  <!-- NAV -->
+  <header class="nav-header">
+    <div class="nav-inner">
+      <a href="{% url 'home' %}" class="nav-logo">
+        <span class="logo-mark">S</span>
+        <span class="logo-text">School<strong>Desk</strong></span>
+      </a>
+      <nav class="nav-links">
+        <a href="{% url 'home' %}" class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">Home</a>
+        <a href="{% url 'book_appointment' %}" class="nav-link {% if request.resolver_match.url_name == 'book_appointment' %}active{% endif %}">Book Appointment</a>
+        <a href="{% url 'appointments_list' %}" class="nav-link {% if request.resolver_match.url_name == 'appointments_list' %}active{% endif %}">View Appointments</a>
+        <a href="/admin/" class="nav-link nav-admin" target="_blank">Admin ↗</a>
+      </nav>
+      <button class="nav-toggle" id="navToggle" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+    <!-- Mobile menu -->
+    <nav class="nav-mobile" id="navMobile">
+      <a href="{% url 'home' %}" class="nav-link">Home</a>
+      <a href="{% url 'book_appointment' %}" class="nav-link">Book Appointment</a>
+      <a href="{% url 'appointments_list' %}" class="nav-link">View Appointments</a>
+      <a href="/admin/" class="nav-link">Admin Panel ↗</a>
+    </nav>
+  </header>
+
+  <!-- MESSAGES -->
+  {% if messages %}
+  <div class="messages-container" id="messagesContainer">
+    {% for message in messages %}
+    <div class="message message-{{ message.tags }}">
+      <span>{{ message }}</span>
+      <button class="message-close" onclick="this.parentElement.remove()">✕</button>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- MAIN -->
+  <main class="main-content">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p class="footer-brand">School<strong>Desk</strong></p>
+      <p class="footer-copy">Student Appointment System &mdash; School Office Management</p>
+      <p class="footer-offices">Registrar &bull; Enrollment &bull; Document Services</p>
+    </div>
+  </footer>
+
+  <script>
+    // Mobile nav toggle
+    const toggle = document.getElementById('navToggle');
+    const mobileNav = document.getElementById('navMobile');
+    toggle?.addEventListener('click', () => {
+      mobileNav.classList.toggle('open');
+      toggle.classList.toggle('active');
+    });
+
+    // Auto-dismiss messages after 5s
+    setTimeout(() => {
+      document.querySelectorAll('.message').forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(-8px)';
+        setTimeout(() => el.remove(), 300);
+      });
+    }, 5000);
+  </script>
+
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

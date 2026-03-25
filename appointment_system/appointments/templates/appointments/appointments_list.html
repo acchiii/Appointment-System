@@ -1,0 +1,162 @@
+{% extends "appointments/base.html" %}
+{% block title %}All Appointments — SchoolDesk{% endblock %}
+
+{% block content %}
+<div class="page-container">
+  <div class="page-header list-header">
+    <div class="page-title-group">
+      <h1 class="page-title">Appointments</h1>
+      <p class="page-subtitle">{{ total_shown }} record{{ total_shown|pluralize }} found</p>
+    </div>
+    <a href="{% url 'book_appointment' %}" class="btn btn-primary">+ Book New</a>
+  </div>
+
+  <!-- SEARCH & FILTER -->
+  <form method="get" class="search-filter-bar">
+    <div class="search-wrap">
+      {{ search_form.search }}
+      <button type="submit" class="search-btn">🔍</button>
+    </div>
+    <div class="filter-group">
+      {{ search_form.office }}
+      {{ search_form.status }}
+      {{ search_form.date_filter }}
+      <button type="submit" class="btn btn-sm btn-outline">Filter</button>
+      <a href="{% url 'appointments_list' %}" class="btn btn-sm btn-ghost">Clear</a>
+    </div>
+  </form>
+
+  <!-- TABLE -->
+  {% if appointments %}
+  <div class="table-wrapper">
+    <table class="appt-table">
+      <thead>
+        <tr>
+          <th>Ref</th>
+          <th>Student</th>
+          <th>Office</th>
+          <th>Date & Time</th>
+          <th>Purpose</th>
+          <th>Contact</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for appt in appointments %}
+        <tr class="appt-row">
+          <td>
+            <span class="appt-ref">APT-{{ appt.id|stringformat:"04d" }}</span>
+          </td>
+          <td>
+            <div class="student-cell">
+              <div class="student-avatar">{{ appt.student_name|first|upper }}</div>
+              <div>
+                <span class="student-name">{{ appt.student_name }}</span>
+                {% if appt.student_id %}
+                <span class="student-id">{{ appt.student_id }}</span>
+                {% endif %}
+              </div>
+            </div>
+          </td>
+          <td>
+            <span class="office-tag">{{ appt.get_office_display }}</span>
+          </td>
+          <td>
+            <div class="datetime-cell">
+              <span class="appt-date">{{ appt.date|date:"M d, Y" }}</span>
+              <span class="appt-time">{{ appt.time|time:"g:i A" }}</span>
+            </div>
+          </td>
+          <td>
+            <span class="purpose-text">{{ appt.get_purpose_display }}</span>
+          </td>
+          <td>
+            <div class="contact-cell">
+              <span>{{ appt.contact }}</span>
+              <a href="mailto:{{ appt.email }}" class="email-link" title="{{ appt.email }}">✉</a>
+            </div>
+          </td>
+          <td>
+            <span class="badge {{ appt.get_status_badge_class }}">
+              {{ appt.get_status_display }}
+            </span>
+          </td>
+          <td>
+            <div class="action-buttons">
+              <a href="{% url 'edit_appointment' appt.pk %}" class="btn-icon btn-edit" title="Edit">✏️</a>
+              <a href="{% url 'delete_appointment' appt.pk %}" class="btn-icon btn-delete" title="Delete">🗑️</a>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- MOBILE CARDS (shown on small screens) -->
+  <div class="appt-cards">
+    {% for appt in appointments %}
+    <div class="appt-card">
+      <div class="appt-card-top">
+        <div class="student-cell">
+          <div class="student-avatar">{{ appt.student_name|first|upper }}</div>
+          <div>
+            <span class="student-name">{{ appt.student_name }}</span>
+            {% if appt.student_id %}<span class="student-id">{{ appt.student_id }}</span>{% endif %}
+          </div>
+        </div>
+        <span class="badge {{ appt.get_status_badge_class }}">{{ appt.get_status_display }}</span>
+      </div>
+      <div class="appt-card-body">
+        <div class="appt-card-row">
+          <span class="appt-card-label">Office</span>
+          <span class="appt-card-value">{{ appt.get_office_display }}</span>
+        </div>
+        <div class="appt-card-row">
+          <span class="appt-card-label">Date & Time</span>
+          <span class="appt-card-value">{{ appt.date|date:"M d, Y" }} at {{ appt.time|time:"g:i A" }}</span>
+        </div>
+        <div class="appt-card-row">
+          <span class="appt-card-label">Purpose</span>
+          <span class="appt-card-value">{{ appt.get_purpose_display }}</span>
+        </div>
+        <div class="appt-card-row">
+          <span class="appt-card-label">Contact</span>
+          <span class="appt-card-value">{{ appt.contact }}</span>
+        </div>
+      </div>
+      <div class="appt-card-actions">
+        <span class="appt-ref-small">APT-{{ appt.id|stringformat:"04d" }}</span>
+        <div class="action-buttons">
+          <a href="{% url 'edit_appointment' appt.pk %}" class="btn btn-sm btn-outline">Edit</a>
+          <a href="{% url 'delete_appointment' appt.pk %}" class="btn btn-sm btn-danger">Delete</a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% else %}
+  <!-- EMPTY STATE -->
+  <div class="empty-state">
+    <div class="empty-icon">📭</div>
+    <h3>No appointments found</h3>
+    <p>
+      {% if request.GET %}
+        No results match your search or filters. Try adjusting them.
+      {% else %}
+        There are no appointments yet. Be the first to book one!
+      {% endif %}
+    </p>
+    <div class="empty-actions">
+      {% if request.GET %}
+      <a href="{% url 'appointments_list' %}" class="btn btn-outline">Clear Filters</a>
+      {% endif %}
+      <a href="{% url 'book_appointment' %}" class="btn btn-primary">Book Appointment →</a>
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

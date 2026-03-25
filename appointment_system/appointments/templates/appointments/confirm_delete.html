@@ -1,0 +1,79 @@
+{% extends "appointments/base.html" %}
+{% block title %}Delete Appointment — SchoolDesk{% endblock %}
+
+{% block content %}
+<div class="page-container page-container-narrow">
+  <div class="page-header">
+    <a href="{% url 'appointments_list' %}" class="back-link">← Back to Appointments</a>
+  </div>
+
+  <div class="delete-card">
+    <div class="delete-icon-wrap">
+      <span class="delete-icon">🗑️</span>
+    </div>
+    <h1 class="delete-title">Delete Appointment?</h1>
+    <p class="delete-subtitle">
+      You are about to permanently delete this appointment record.
+      This action <strong>cannot be undone</strong>.
+    </p>
+
+    <!-- Appointment Summary -->
+    <div class="delete-summary">
+      <div class="delete-ref">APT-{{ appointment.id|stringformat:"04d" }}</div>
+      <div class="delete-details">
+        <div class="delete-detail-row">
+          <span class="delete-detail-label">Student</span>
+          <span class="delete-detail-value">{{ appointment.student_name }}</span>
+        </div>
+        {% if appointment.student_id %}
+        <div class="delete-detail-row">
+          <span class="delete-detail-label">Student ID</span>
+          <span class="delete-detail-value">{{ appointment.student_id }}</span>
+        </div>
+        {% endif %}
+        <div class="delete-detail-row">
+          <span class="delete-detail-label">Office</span>
+          <span class="delete-detail-value">{{ appointment.get_office_display }}</span>
+        </div>
+        <div class="delete-detail-row">
+          <span class="delete-detail-label">Date & Time</span>
+          <span class="delete-detail-value">
+            {{ appointment.date|date:"F d, Y" }} at {{ appointment.time|time:"g:i A" }}
+          </span>
+        </div>
+        <div class="delete-detail-row">
+          <span class="delete-detail-label">Purpose</span>
+          <span class="delete-detail-value">{{ appointment.get_purpose_display }}</span>
+        </div>
+        <div class="delete-detail-row">
+          <span class="delete-detail-label">Contact</span>
+          <span class="delete-detail-value">{{ appointment.contact }}</span>
+        </div>
+        <div class="delete-detail-row">
+          <span class="delete-detail-label">Status</span>
+          <span class="delete-detail-value">
+            <span class="badge {{ appointment.get_status_badge_class }}">
+              {{ appointment.get_status_display }}
+            </span>
+          </span>
+        </div>
+        <div class="delete-detail-row">
+          <span class="delete-detail-label">Booked On</span>
+          <span class="delete-detail-value">{{ appointment.created_at|date:"M d, Y g:i A" }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Confirm / Cancel buttons -->
+    <form method="post" class="delete-actions">
+      {% csrf_token %}
+      <a href="{% url 'appointments_list' %}" class="btn btn-ghost btn-lg">
+        ← Keep Appointment
+      </a>
+      <button type="submit" class="btn btn-danger btn-lg">
+        Yes, Delete
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,177 @@
+{% extends "appointments/base.html" %}
+{% block title %}Edit Appointment APT-{{ appointment.id|stringformat:"04d" }} — SchoolDesk{% endblock %}
+
+{% block content %}
+<div class="page-container">
+  <div class="page-header">
+    <a href="{% url 'appointments_list' %}" class="back-link">← Back to Appointments</a>
+    <div class="page-title-group">
+      <div class="page-title-row">
+        <h1 class="page-title">Edit Appointment</h1>
+        <span class="appt-ref-large">APT-{{ appointment.id|stringformat:"04d" }}</span>
+      </div>
+      <p class="page-subtitle">Update the appointment details below. All changes are saved immediately.</p>
+    </div>
+  </div>
+
+  <div class="form-layout">
+    <!-- FORM CARD -->
+    <div class="form-card">
+      <div class="form-card-header">
+        <span class="form-card-icon">✏️</span>
+        <div>
+          <h2 class="form-card-title">Update Details</h2>
+          <p class="form-card-sub">Originally booked on {{ appointment.created_at|date:"M d, Y \\a\\t g:i A" }}</p>
+        </div>
+      </div>
+
+      <form method="post" class="appt-form" novalidate>
+        {% csrf_token %}
+
+        <!-- Student Info -->
+        <div class="form-section">
+          <h3 class="form-section-title">👤 Student Information</h3>
+          <div class="form-row two-col">
+            <div class="form-group">
+              <label for="{{ form.student_name.id_for_label }}" class="form-label">
+                Full Name <span class="required">*</span>
+              </label>
+              {{ form.student_name }}
+              {% if form.student_name.errors %}<span class="form-error">{{ form.student_name.errors.0 }}</span>{% endif %}
+            </div>
+            <div class="form-group">
+              <label for="{{ form.student_id.id_for_label }}" class="form-label">Student ID / Reference</label>
+              {{ form.student_id }}
+              {% if form.student_id.errors %}<span class="form-error">{{ form.student_id.errors.0 }}</span>{% endif %}
+            </div>
+          </div>
+          <div class="form-row two-col">
+            <div class="form-group">
+              <label for="{{ form.email.id_for_label }}" class="form-label">
+                Email Address <span class="required">*</span>
+              </label>
+              {{ form.email }}
+              {% if form.email.errors %}<span class="form-error">{{ form.email.errors.0 }}</span>{% endif %}
+            </div>
+            <div class="form-group">
+              <label for="{{ form.contact.id_for_label }}" class="form-label">
+                Contact Number <span class="required">*</span>
+              </label>
+              {{ form.contact }}
+              {% if form.contact.errors %}<span class="form-error">{{ form.contact.errors.0 }}</span>{% endif %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Appointment Details -->
+        <div class="form-section">
+          <h3 class="form-section-title">🗓️ Appointment Details</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="{{ form.office.id_for_label }}" class="form-label">
+                School Office <span class="required">*</span>
+              </label>
+              {{ form.office }}
+              {% if form.office.errors %}<span class="form-error">{{ form.office.errors.0 }}</span>{% endif %}
+            </div>
+          </div>
+          <div class="form-row two-col">
+            <div class="form-group">
+              <label for="{{ form.date.id_for_label }}" class="form-label">
+                Appointment Date <span class="required">*</span>
+              </label>
+              {{ form.date }}
+              {% if form.date.errors %}<span class="form-error">{{ form.date.errors.0 }}</span>{% endif %}
+              <span class="form-hint">Mon–Fri only</span>
+            </div>
+            <div class="form-group">
+              <label for="{{ form.time.id_for_label }}" class="form-label">
+                Appointment Time <span class="required">*</span>
+              </label>
+              {{ form.time }}
+              {% if form.time.errors %}<span class="form-error">{{ form.time.errors.0 }}</span>{% endif %}
+              <span class="form-hint">8:00 AM – 5:00 PM</span>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="{{ form.purpose.id_for_label }}" class="form-label">
+                Purpose / Concern <span class="required">*</span>
+              </label>
+              {{ form.purpose }}
+              {% if form.purpose.errors %}<span class="form-error">{{ form.purpose.errors.0 }}</span>{% endif %}
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="{{ form.notes.id_for_label }}" class="form-label">Additional Notes</label>
+              {{ form.notes }}
+              {% if form.notes.errors %}<span class="form-error">{{ form.notes.errors.0 }}</span>{% endif %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Status Update -->
+        <div class="form-section">
+          <h3 class="form-section-title">📌 Current Status</h3>
+          <div class="status-display">
+            <span class="badge {{ appointment.get_status_badge_class }} badge-lg">
+              {{ appointment.get_status_display }}
+            </span>
+            <p class="status-note">Status can be updated by staff through the <a href="/admin/">Admin Panel</a> or using the quick-update below.</p>
+          </div>
+          <!-- Quick status update -->
+          <div class="form-row">
+            <form method="post" action="{% url 'update_status' appointment.pk %}" class="inline-status-form">
+              {% csrf_token %}
+              <select name="status" class="form-input form-select" style="max-width:200px">
+                <option value="pending" {% if appointment.status == 'pending' %}selected{% endif %}>Pending</option>
+                <option value="approved" {% if appointment.status == 'approved' %}selected{% endif %}>Approved</option>
+                <option value="done" {% if appointment.status == 'done' %}selected{% endif %}>Done</option>
+                <option value="cancelled" {% if appointment.status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+              </select>
+              <button type="submit" class="btn btn-sm btn-outline">Update Status</button>
+            </form>
+          </div>
+        </div>
+
+        {% if form.non_field_errors %}
+        <div class="form-non-field-errors">
+          {% for error in form.non_field_errors %}
+          <p class="form-error">{{ error }}</p>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="form-actions">
+          <a href="{% url 'delete_appointment' appointment.pk %}" class="btn btn-danger">🗑️ Delete</a>
+          <div style="display:flex;gap:8px">
+            <a href="{% url 'appointments_list' %}" class="btn btn-ghost">Cancel</a>
+            <button type="submit" class="btn btn-primary btn-lg">Save Changes →</button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- SIDEBAR -->
+    <aside class="form-sidebar">
+      <div class="info-card info-card-dark">
+        <h3>📋 Appointment Summary</h3>
+        <table class="info-table">
+          <tr><td>Reference</td><td><strong>APT-{{ appointment.id|stringformat:"04d" }}</strong></td></tr>
+          <tr><td>Student</td><td><strong>{{ appointment.student_name }}</strong></td></tr>
+          <tr><td>Office</td><td>{{ appointment.get_office_display }}</td></tr>
+          <tr><td>Date</td><td>{{ appointment.date|date:"M d, Y" }}</td></tr>
+          <tr><td>Time</td><td>{{ appointment.time|time:"g:i A" }}</td></tr>
+          <tr><td>Purpose</td><td>{{ appointment.get_purpose_display }}</td></tr>
+          <tr><td>Booked</td><td>{{ appointment.created_at|date:"M d, Y" }}</td></tr>
+        </table>
+      </div>
+      <div class="info-card">
+        <h3>⚠️ Note</h3>
+        <p>Changes to the appointment date, time, or purpose will be reflected immediately. Notify the student if major details are modified.</p>
+      </div>
+    </aside>
+  </div>
+</div>
+{% endblock %}
