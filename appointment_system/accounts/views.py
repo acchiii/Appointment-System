@@ -31,9 +31,10 @@ def login_view(request):
         form = LoginForm(request, data=request.POST)
         # Allow login by email
         username_input = request.POST.get('username', '')
+
         if '@' in username_input:
             try:
-                user_obj = User.objects.get(email=username_input)
+                user_obj = User.objects.filter(email=username_input).first()
                 request.POST = request.POST.copy()
                 request.POST['username'] = user_obj.username
                 form = LoginForm(request, data=request.POST)

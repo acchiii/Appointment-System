@@ -61,6 +61,7 @@ class StudentRegistrationForm(forms.ModelForm):
         while User.objects.filter(username=username).exists():
             username = f"{base}{n}"
             n += 1
+            
         user.username = username
         user.first_name = self.cleaned_data['first_name']
         user.last_name = self.cleaned_data['last_name']

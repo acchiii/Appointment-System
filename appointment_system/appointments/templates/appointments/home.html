@@ -24,16 +24,19 @@
     </p>
 
     
-    {% if not user.authenticated or not user.is_student %}
+    {% if not user.profile.role in 'staff,admin' %}
       
     <div class="hero-actions">
-      
-      <a href="{% if user.is_authenticated and user.is_student %} {% url 'book_appointment' %} {% else %} {% url 'login' %} {% endif %}" class="btn btn-primary btn-lg">
-        Book Appointment →
-      </a>
-      <a href="{% if user.is_authenticated and user.is_student %} {% url 'appointments_list' %} {% else %} {% url 'login' %} {% endif %}" class="btn btn-outline btn-lg">
-        View Appointments
-      </a>
+    
+              {% comment %} <a href="/admin/" class="nav-dropdown-item" target="_blank">Admin Panel ↗</a> {% endcomment %}
+              
+              <a href="{% if user.is_authenticated and user.is_student %} {% url 'book_appointment' %} {% else %} {% url 'login' %} {% endif %}" class="btn btn-primary btn-lg">
+                Book Appointment →
+              </a>
+              <a href="{% if user.is_authenticated and user.is_student %} {% url 'appointments_list' %} {% else %} {% url 'login' %} {% endif %}" class="btn btn-outline btn-lg">
+                View Appointments
+              </a>
+
     </div>
     {% endif %}
 
@@ -110,7 +113,9 @@
         <li>Grade Inquiries</li>
         <li>Certifications</li>
       </ul>
+      {% if not user.profile.role in 'staff,admin' %}
       <a href="{% if user.is_authenticated and user.is_student %}{% url 'book_appointment' %} {% else %}{% url 'login' %} {% endif %}" class="btn btn-sm btn-outline">Book Now</a>
+      {% endif %}
     </div>
     <div class="office-card featured">
       <div class="office-badge">Most Visited</div>
@@ -123,7 +128,9 @@
         <li>Subject Load Concerns</li>
         <li>Schedule Issues</li>
       </ul>
+      {% if not user.profile.role in 'staff,admin' %}
       <a href="{% if user.is_authenticated and user.is_student %}{% url 'book_appointment' %} {% else %}{% url 'login' %} {% endif %}" class="btn btn-sm btn-primary">Book Now</a>
+      {% endif %}
     </div>
     <div class="office-card">
       <div class="office-icon">📄</div>
@@ -135,7 +142,9 @@
         <li>Official Document Requests</li>
         <li>General Inquiries</li>
       </ul>
+      {% if not user.profile.role in 'staff,admin' %}
       <a href="{% if user.is_authenticated and user.is_student %}{% url 'book_appointment' %} {% else %}{% url 'login' %} {% endif %}" class="btn btn-sm btn-outline">Book Now</a>
+      {% endif %}
     </div>
   </div>
 </section>
