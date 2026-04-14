@@ -1,5 +1,5 @@
 {% extends "appointments/base.html" %}
-{% block title %}Book Appointment — SchoolDesk{% endblock %}
+{% block title %}Book Appointment — SchoolAppointment{% endblock %}
 
 {% block content %}
 <div class="page-container">
@@ -157,9 +157,9 @@
       <div class="info-card">
         <h3>🏫 Available Offices</h3>
         <ul class="info-list">
-          <li>📚 <strong>Registrar</strong> — TOR, records, diplomas</li>
-          <li>📝 <strong>Enrollment</strong> — Enrollment & shifting</li>
+        <li>📚 <strong>Registrar</strong> — TOR, records, diplomas</li>
           <li>📄 <strong>Documents</strong> — Certificates & requests</li>
+          <li>❓ <a href="{% url 'faq' %}">Enrollment FAQ</a> — Read if you want to enroll</li>
         </ul>
       </div>
       <div class="info-card info-card-tip">

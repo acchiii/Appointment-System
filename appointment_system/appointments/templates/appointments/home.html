@@ -1,205 +1,226 @@
-{% extends "appointments/base.html" %}
-{% block title %}SchoolDesk — Student Appointment System{% endblock %}
+{% extends 'appointments/base.html' %}
+{% block title %}
+  SchoolAppointment — Student Appointment System
+{% endblock %}
 
 {% block content %}
-{% load static %}
-<section class="hero" >
-  {% comment %} background-image: url({% static 'images/cec-banner.jpg' %}); {% endcomment %}
-{% comment %} <section class="hero" style="height: 85vh; background: rgba(255,255,255,0.6); position: fixed; left: 0; top: 0; z-index: -1;"></section> {% endcomment %}
-  <div class="hero-bg-circles">
-    <div class="circle c1"></div>
-    <div class="circle c2"></div>
-    <div class="circle c3"></div>
-  </div>
-  <div class="hero-content">
-    <div class="hero-badge">📋 School Office Portal</div>
-    <h1 class="hero-title">
-      Book Your<br>
-      <em>Appointment</em><br>
-      Easily
-    </h1>
-    <p class="hero-subtitle">
-      Skip the long lines. Schedule your visit to the Registrar, Enrollment Office,
-      or Document Services — all in one place.
-    </p>
+  {% load static %}
+  <section class="hero">
+    {% comment %}background-image: url({% static 'images/cec-banner.jpg' %});{% endcomment %}
+    {% comment %} <section class="hero" style="height: 85vh; background: rgba(255,255,255,0.6); position: fixed; left: 0; top: 0; z-index: -1;"></section> {% endcomment %}
+    <div class="hero-bg-circles">
+      <div class="circle c1"></div>
+      <div class="circle c2"></div>
+      <div class="circle c3"></div>
+    </div>
+    <div class="hero-content">
+      <div class="hero-badge">📋 School Office Portal</div>
+      <h1 class="hero-title">
+        Book Your<br />
+        <em>Appointment</em><br />
+        Easily
+      </h1>
+      <p class="hero-subtitle">Skip the long lines. Schedule your visit to the Registrar, Enrollment Office, or Document Services — all in one place.</p>
 
-    
-    {% if not user.profile.role in 'staff,admin' %}
-      
-    <div class="hero-actions">
-    
-              {% comment %} <a href="/admin/" class="nav-dropdown-item" target="_blank">Admin Panel ↗</a> {% endcomment %}
-              
-              <a href="{% if user.is_authenticated and user.is_student %} {% url 'book_appointment' %} {% else %} {% url 'login' %} {% endif %}" class="btn btn-primary btn-lg">
-                Book Appointment →
-              </a>
-              <a href="{% if user.is_authenticated and user.is_student %} {% url 'appointments_list' %} {% else %} {% url 'login' %} {% endif %}" class="btn btn-outline btn-lg">
-                View Appointments
-              </a>
-
-    </div>
-    {% endif %}
-
-  </div>
-  <div class="hero-visual">
-    <div class="visual-card vc-1">
-      <span class="vc-icon">🏫</span>
-      <span class="vc-label">Registrar</span>
-    </div>
-    <div class="visual-card vc-2">
-      <span class="vc-icon">📝</span>
-      <span class="vc-label">Enrollment</span>
-    </div>
-    <div class="visual-card vc-3">
-      <span class="vc-icon">📄</span>
-      <span class="vc-label">Documents</span>
-    </div>
-    <div class="visual-card vc-main">
-      <div class="vc-main-header">
-        <span class="vc-dot green"></span>
-        <span class="vc-dot yellow"></span>
-        <span class="vc-dot red"></span>
-      </div>
-      <div class="vc-main-content">
-        <div class="vc-row"></div>
-        <div class="vc-row short"></div>
-        <div class="vc-row medium"></div>
-        <div class="vc-row short"></div>
-      </div>
-      <div class="vc-main-badge">Appointment Confirmed ✓</div>
-    </div>
-  </div>
-</section>
-
-
-{% comment %} {% if user.is_authenticated and user.profile.role in 'staff, admin'  %} {% endcomment %}
-
-<section class="stats-section">
-  <div class="stats-grid">
-    <div class="stat-card">
-      <span class="stat-number">{{ total }}</span>
-      <span class="stat-label">Total Appointments</span>
-    </div>
-    <div class="stat-card accent-green">
-      <span class="stat-number">{{ today_count }}</span>
-      <span class="stat-label">Today's Schedule</span>
-    </div>
-    <div class="stat-card accent-orange">
-      <span class="stat-number">{{ pending_count }}</span>
-      <span class="stat-label">Pending Review</span>
-    </div>
-    <div class="stat-card accent-blue">
-      <span class="stat-number">{{ approved_count }}</span>
-      <span class="stat-label">Approved</span>
-    </div>
-  </div>
-</section>
-{% comment %} {% endif %} {% endcomment %}
-
-
-<section class="offices-section">
-  <div class="section-header">
-    <h2 class="section-title">School Offices</h2>
-    <p class="section-sub">Choose your office when booking an appointment</p>
-  </div>
-  <div class="offices-grid">
-    <div class="office-card">
-      <div class="office-icon">🏫</div>
-      <h3 class="office-name">Registrar Office</h3>
-      <p class="office-desc">Official records, Transcript of Records (TOR), authentication, and academic documents.</p>
-      <ul class="office-services">
-        <li>TOR Request</li>
-        <li>Diploma & Graduation Docs</li>
-        <li>Grade Inquiries</li>
-        <li>Certifications</li>
-      </ul>
       {% if not user.profile.role in 'staff,admin' %}
-      <a href="{% if user.is_authenticated and user.is_student %}{% url 'book_appointment' %} {% else %}{% url 'login' %} {% endif %}" class="btn btn-sm btn-outline">Book Now</a>
+        <div class="hero-actions">
+          {% comment %} <a href="/admin/" class="nav-dropdown-item" target="_blank">Admin Panel ↗</a> {% endcomment %}
+
+          <a href="{% if user.is_authenticated and user.profile.role == 'student' %}
+              {% url 'book_appointment' %}
+            {% else %}
+              {% url 'login' %}
+            {% endif %}"
+            class="btn btn-primary btn-lg">
+            Book Appointment →
+          </a>
+          <a href="{% if user.is_authenticated and user.profile.role == 'student' %}
+              {% url 'appointments_list' %}
+            {% else %}
+              {% url 'login' %}
+            {% endif %}"
+            class="btn btn-outline btn-lg">
+            View Appointments
+          </a>
+        </div>
       {% endif %}
     </div>
-    <div class="office-card featured">
-      <div class="office-badge">Most Visited</div>
-      <div class="office-icon">📝</div>
-      <h3 class="office-name">Enrollment Office</h3>
-      <p class="office-desc">Enrollment concerns, subject loads, course shifting, and academic schedules.</p>
-      <ul class="office-services">
-        <li>Enrollment Inquiries</li>
-        <li>Course Shifting</li>
-        <li>Subject Load Concerns</li>
-        <li>Schedule Issues</li>
-      </ul>
-      {% if not user.profile.role in 'staff,admin' %}
-      <a href="{% if user.is_authenticated and user.is_student %}{% url 'book_appointment' %} {% else %}{% url 'login' %} {% endif %}" class="btn btn-sm btn-primary">Book Now</a>
-      {% endif %}
-    </div>
-    <div class="office-card">
-      <div class="office-icon">📄</div>
-      <h3 class="office-name">Document Services</h3>
-      <p class="office-desc">Request official documents, certifications, good moral certificates, and other records.</p>
-      <ul class="office-services">
-        <li>Good Moral Certificate</li>
-        <li>Certificate of Enrollment</li>
-        <li>Official Document Requests</li>
-        <li>General Inquiries</li>
-      </ul>
-      {% if not user.profile.role in 'staff,admin' %}
-      <a href="{% if user.is_authenticated and user.is_student %}{% url 'book_appointment' %} {% else %}{% url 'login' %} {% endif %}" class="btn btn-sm btn-outline">Book Now</a>
-      {% endif %}
-    </div>
-  </div>
-</section>
-
-
-<section class="how-section">
-  <div class="section-header">
-    <h2 class="section-title">How It Works</h2>
-    <p class="section-sub">Three simple steps to book your appointment</p>
-  </div>
-  <div class="steps-grid">
-    <div class="step-card">
-      <div class="step-num">01</div>
-      <h4>Fill the Form</h4>
-      <p>Enter your name, contact details, and select your preferred office, date, and time.</p>
-    </div>
-    <div class="step-connector">→</div>
-    <div class="step-card">
-      <div class="step-num">02</div>
-      <h4>Submit & Confirm</h4>
-      <p>Submit the form. You'll receive a reference number and your appointment is recorded.</p>
-    </div>
-    <div class="step-connector">→</div>
-    <div class="step-card">
-      <div class="step-num">03</div>
-      <h4>Visit the Office</h4>
-      <p>Arrive on your scheduled date and time. Show your reference number at the counter.</p>
-    </div>
-  </div>
-</section>
-
-
-{% if recent %}
-{% comment %} and user.is_authenticated and user.profile.role in 'staff, admin' {% endcomment %}
-<section class="recent-section">
-  <div class="section-header">
-    <h2 class="section-title">Recent Activity</h2>
-    <a href="{% url 'appointments_list' %}" class="view-all-link">View all →</a>
-  </div>
-  <div class="recent-list">
-    {% for appt in recent %}
-    <div class="recent-item">
-      <div class="recent-avatar">{{ appt.student_name|first|upper }}</div>
-      <div class="recent-info">
-        <span class="recent-name">{{ appt.student_name }}</span>
-        <span class="recent-detail">{{ appt.get_office_display }} &mdash; {{ appt.get_purpose_display }}</span>
+    <div class="hero-visual">
+      <div class="visual-card vc-1">
+        <span class="vc-icon">🏫</span>
+        <span class="vc-label">Registrar</span>
       </div>
-      <div class="recent-meta">
-        <span class="recent-date">{{ appt.date|date:"M d, Y" }}</span>
-        <span class="badge {{ appt.get_status_badge_class }}">{{ appt.get_status_display }}</span>
+      <div class="visual-card vc-2">
+        <span class="vc-icon">❓</span>
+        <span class="vc-label">FAQ</span>
+      </div>
+      <div class="visual-card vc-3">
+        <span class="vc-icon">📄</span>
+        <span class="vc-label">Documents</span>
+      </div>
+      <div class="visual-card vc-main">
+        <div class="vc-main-header">
+          <span class="vc-dot green"></span>
+          <span class="vc-dot yellow"></span>
+          <span class="vc-dot red"></span>
+        </div>
+        <div class="vc-main-content">
+          <div class="vc-row"></div>
+          <div class="vc-row short"></div>
+          <div class="vc-row medium"></div>
+          <div class="vc-row short"></div>
+        </div>
+        <div class="vc-main-badge">Appointment Confirmed ✓</div>
       </div>
     </div>
-    {% endfor %}
-  </div>
-</section>
-{% endif %}
+  </section>
 
+  {% comment %} {% if user.is_authenticated and user.profile.role in 'staff, admin' %}
+    {% endcomment %}
+
+    <section class="stats-section">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-number">{{ total }}</span>
+          <span class="stat-label">Total Appointments</span>
+        </div>
+        <div class="stat-card accent-green">
+          <span class="stat-number">{{ today_count }}</span>
+          <span class="stat-label">Today's Schedule</span>
+        </div>
+        <div class="stat-card accent-orange">
+          <span class="stat-number">{{ pending_count }}</span>
+          <span class="stat-label">Pending Review</span>
+        </div>
+        <div class="stat-card accent-blue">
+          <span class="stat-number">{{ approved_count }}</span>
+          <span class="stat-label">Approved</span>
+        </div>
+      </div>
+    </section>
+    {% comment %}
+  {% endif %} {% endcomment %}
+
+  <section class="offices-section">
+    <div class="section-header">
+      <h2 class="section-title">School Offices</h2>
+      <p class="section-sub">Choose your office when booking an appointment</p>
+    </div>
+    <div class="offices-grid">
+      <div class="office-card">
+        <div class="office-icon">🏫</div>
+        <h3 class="office-name">Registrar Office</h3>
+        <p class="office-desc">Official records, Transcript of Records (TOR), authentication, and academic documents.</p>
+        <ul class="office-services">
+          <li>TOR Request</li>
+          <li>Diploma & Graduation Docs</li>
+          <li>Grade Inquiries</li>
+          <li>Certifications</li>
+        </ul>
+        {% if not user.profile.role in 'staff,admin' %}
+          <a href="{% if user.is_authenticated and user.profile.role == 'student' %}
+              {% url 'book_appointment' %}
+            {% else %}
+              {% url 'login' %}
+            {% endif %}"
+            class="btn btn-sm btn-outline">
+            Book Now
+          </a>
+        {% endif %}
+      </div>
+      <div class="office-card featured">
+        <div class="office-badge">Most Visited</div>
+        <div class="office-icon">📄</div>
+        <h3 class="office-name">Document Services</h3>
+        <p class="office-desc">Request official documents, certifications, good moral certificates, and other records.</p>
+        <ul class="office-services">
+          <li>Good Moral Certificate</li>
+          <li>Certificate of Enrollment</li>
+          <li>Official Document Requests</li>
+          <li>General Inquiries</li>
+        </ul>
+        {% if not user.profile.role in 'staff,admin' %}
+          <a href="{% if user.is_authenticated and user.profile.role == 'student' %}
+              {% url 'book_appointment' %}
+            {% else %}
+              {% url 'login' %}
+            {% endif %}"
+            class="btn btn-sm btn-primary">
+            Book Now
+          </a>
+        {% endif %}
+      </div>
+      <div class="office-card">
+        <div class="office-icon">📝</div>
+        <h3 class="office-name">EDP Office</h3>
+        <p class="office-desc">Grade concerns and academic schedules.</p>
+        <ul class="office-services">
+          <li>Grade Inquiries</li>
+          <li>Course Shifting</li>  
+          <li>Schedule Issues</li>
+        </ul>
+        {% if not user.profile.role in 'staff,admin' %}
+          <a href="{% if user.is_authenticated and user.profile.role == 'student' %}
+              {% url 'book_appointment' %}
+            {% else %}
+              {% url 'login' %}
+            {% endif %}"
+            class="btn btn-sm btn-outline">
+            Book Now
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+
+  <section class="how-section">
+    <div class="section-header">
+      <h2 class="section-title">How It Works</h2>
+      <p class="section-sub">Three simple steps to book your appointment</p>
+    </div>
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-num">01</div>
+        <h4>Fill the Form</h4>
+        <p>Enter your name, contact details, and select your preferred office, date, and time.</p>
+      </div>
+      <div class="step-connector">→</div>
+      <div class="step-card">
+        <div class="step-num">02</div>
+        <h4>Submit & Confirm</h4>
+        <p>Submit the form. You'll receive a reference number and your appointment is recorded.</p>
+      </div>
+      <div class="step-connector">→</div>
+      <div class="step-card">
+        <div class="step-num">03</div>
+        <h4>Visit the Office</h4>
+        <p>Arrive on your scheduled date and time. Show your reference number at the counter.</p>
+      </div>
+    </div>
+  </section>
+
+  {% if recent %}
+    {% comment %}and user.is_authenticated and user.profile.role in 'staff, admin'{% endcomment %}
+    <section class="recent-section">
+      <div class="section-header">
+        <h2 class="section-title">Recent Activity</h2>
+        <a href="{% url 'appointments_list' %}" class="view-all-link">View all →</a>
+      </div>
+      <div class="recent-list">
+        {% for appt in recent %}
+          <div class="recent-item">
+            <div class="recent-avatar">{{ appt.student_name|first|upper }}</div>
+            <div class="recent-info">
+              <span class="recent-name">{{ appt.student_name }}</span>
+              <span class="recent-detail">{{ appt.get_office_display }} &mdash; {{ appt.get_purpose_display }}</span>
+            </div>
+            <div class="recent-meta">
+              <span class="recent-date">{{ appt.date|date:'M d, Y' }}</span>
+              <span class="badge {{ appt.get_status_badge_class }}">{{ appt.get_status_display }}</span>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
 {% endblock %}

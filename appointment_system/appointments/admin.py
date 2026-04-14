@@ -47,6 +47,6 @@ class AppointmentAdmin(admin.ModelAdmin):
 
 
 
-admin.site.site_header = "SchoolDesk Admin Panel"
-admin.site.site_title = "SchoolDesk"
+admin.site.site_header = "SchoolAppointment Admin Panel"
+admin.site.site_title = "SchoolAppointment"
 admin.site.index_title = "Appointment Management System"

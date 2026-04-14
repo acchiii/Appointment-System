@@ -11,7 +11,7 @@ class Appointment(models.Model):
 
     PURPOSE_CHOICES = [
         ('tor_request', 'Transcript of Records (TOR) Request'),
-        ('enrollment', 'Enrollment Inquiry'),
+    
         ('document_request', 'Document Request'),
         ('certification', 'Certification / Certificate of Enrollment'),
         ('good_moral', 'Good Moral Certificate'),
@@ -22,7 +22,6 @@ class Appointment(models.Model):
 
     OFFICE_CHOICES = [
         ('registrar', 'Registrar Office'),
-        ('enrollment', 'Enrollment Office'),
         ('document', 'Document Services'),
     ]
 

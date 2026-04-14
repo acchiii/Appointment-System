@@ -47,6 +47,10 @@ def home(request):
     return render(request, 'appointments/home.html', context)
 
 
+def faq(request):
+    return render(request, 'appointments/faq.html')
+
+
 @login_required
 def book_appointment(request):
    
